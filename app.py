@@ -1,11 +1,3 @@
-수연님, 이제 앱이 정말 군더더기 없이 깔끔해지겠네요!
-
-요청하신 대로 상담 양식 상단의 안내 문구와 입력창 안의 예시 문구(placeholder)를 모두 삭제했습니다. 이렇게 하면 사용자가 영상을 본 뒤 바로 자신의 본론을 입력할 수 있어 훨씬 몰입감이 생길 거예요.
-
-✅ 문구 삭제 및 디자인 최적화 코드로 app.py 업데이트하기
-GitHub의 app.py 내용을 아래 코드로 전체 교체(덮어쓰기)해 주세요.
-
-Python
 import streamlit as st
 import time
 
@@ -111,7 +103,7 @@ with col2:
         
         if st.button("상담 내용 제출", key="submit_btn"):
             if user_input:
-                st.success("접수되었습니다! 전문가 수연님이 곧 연락드리겠습니다.")
+                st.success("접수되었습니다! 연락드리겠습니다.")
                 time.sleep(2.5)
                 st.session_state.app_state = STATE_START_BUTTON
                 st.rerun()
