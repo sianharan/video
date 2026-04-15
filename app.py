@@ -3,7 +3,7 @@ import time
 
 st.set_page_config(layout="wide")
 
-video_url = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/720/Big_Buck_Bunny_720_10s_5MB.mp4" # 10-second video
+video_url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" # Changed to a more robust 10-second video URL
 
 # 콘텐츠를 중앙에 배치하기 위해 컬럼 사용 (대략 절반 너비)
 col1, col2, col3 = st.columns([1, 2, 1])
