@@ -110,8 +110,8 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
         st.write("<h3 style='text-align: center;'>교육 영상 시청 중</h3>", unsafe_allow_html=True)
         st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
 
-        # 비디오 재생 시간을 시뮬레이션 (10초 동안 UI 블록)
-        time.sleep(10) # 비디오가 재생되는 동안 UI를 10초간 블록합니다.
+        # 비디오 재생 시간을 시뮬레이션 (10초 동안 UI 블록) - 이 부분을 제거하여 비디오가 바로 재생되도록 합니다.
+        # time.sleep(10) # 비디오가 재생되는 동안 UI를 10초간 블록합니다.
         st.session_state.app_state = STATE_CONSULTATION_FORM # 상태를 상담 양식으로 변경
         st.rerun() # 앱을 다시 실행하여 새 상태 반영
 
