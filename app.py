@@ -3,8 +3,7 @@ import time
 
 st.set_page_config(layout="wide")
 
-# Reverting to the previous video URL as requested by the user
-video_url = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/720/Big_Buck_Bunny_720_10s_5MB.mp4"
+video_url = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/720/Big_Buck_Bunny_720_10s_5MB.mp4" # 10초 길이의 비디오
 
 # 콘텐츠를 중앙에 배치하기 위해 컬럼 사용 (대략 절반 너비)
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -44,7 +43,7 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
                 background-color: #45a049;
             }
 
-            /* 카운트다운 팝업 스타일 (비디오 팝업 위에 뜸) */
+            /* 카운트다운 오버레이 스타일 */
             .countdown-overlay {
                 position: fixed; /* 고정 위치 */
                 top: 0;
@@ -99,21 +98,23 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
     # State initialization
     if "show_start_button" not in st.session_state:
         st.session_state.show_start_button = True
-    if "show_video_and_form" not in st.session_state:
-        st.session_state.show_video_and_form = False
+    if "show_video_and_countdown" not in st.session_state:
+        st.session_state.show_video_and_countdown = False
+    if "show_consultation_form" not in st.session_state:
+        st.session_state.show_consultation_form = False
 
     # 1. Show initial "상담하기" button
     if st.session_state.show_start_button:
-        st.markdown("<br>" * 5, unsafe_allow_html=True) # Add some initial vertical space
+        st.markdown("<br>" * 5, unsafe_allow_html=True)
         st.write("상담하기 버튼을 눌러 영상을 시청하고 상담을 요청하세요.")
         if st.button("상담하기", key="start_consultation"):
             st.session_state.show_start_button = False
-            st.session_state.show_video_and_form = True
-            st.rerun() # Rerun to immediately show the video and form
+            st.session_state.show_video_and_countdown = True
+            st.rerun()
 
-    # 2. Show Video and Consultation Form
-    if st.session_state.show_video_and_form:
-        # Display video first, so the countdown can overlay it
+    # 2. Show Video and Countdown
+    elif st.session_state.show_video_and_countdown:
+        # Display video first
         st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
 
         # Countdown layer - this will appear on top of the video due to CSS
@@ -130,16 +131,24 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
             countdown_placeholder.markdown(countdown_html, unsafe_allow_html=True)
             # Removed time.sleep(1) to prevent blocking the Streamlit app and allow video to play.
             # This will make the countdown visual appear very quickly.
-        countdown_placeholder.empty() # Remove countdown layer
 
-        # Consultation Form
+        countdown_placeholder.empty() # Remove countdown layer after 'countdown'
+
+        # After countdown (and video playing, as time.sleep was removed),
+        # transition to consultation form. This effectively happens immediately after the countdown loop finishes.
+        st.session_state.show_video_and_countdown = False
+        st.session_state.show_consultation_form = True
+        st.rerun()
+
+    # 3. Show Consultation Form
+    elif st.session_state.show_consultation_form:
         st.markdown('<div class="consultation-form-container">', unsafe_allow_html=True)
         st.write("### 상담 요청")
         user_input = st.text_area("문의 내용을 입력하세요.", key="consultation_input_form", height=150)
         if st.button("상담 내용 제출", key="submit_consultation_form"):
             if user_input:
                 st.success("상담 내용이 접수되었습니다. 곧 연락드리겠습니다!")
-                st.session_state.show_video_and_form = False # Hide video and form
+                st.session_state.show_consultation_form = False # Hide form
                 st.session_state.show_start_button = True # Go back to the initial state
                 st.rerun()
             else:
