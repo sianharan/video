@@ -177,7 +177,8 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
                 <div class="video-modal-content">
         """, unsafe_allow_html=True)
 
-        st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=False, width=700)
+        # Added autoplay=True and ensured muted=True for better playback compatibility
+        st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
 
         if st.button("닫기", key="close_video_popup"):
             st.session_state.show_video_popup = False
