@@ -7,10 +7,21 @@ st.set_page_config(layout="wide")
 # 2. 사용할 비디오 URL
 video_url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
 
-# 3. 강력한 CSS: 여백 제거 및 텍스트 스타일
+# 3. 강력한 CSS: 상단 간격 확보 및 짤림 방지
 st.markdown("""
     <style>
-        .block-container { padding-top: 2rem; padding-bottom: 0rem; }
+        /* [수정] 전체 컨테이너 상단 여백을 넉넉하게 (5rem) */
+        .block-container { 
+            padding-top: 5rem !important; 
+            padding-bottom: 2rem; 
+        }
+
+        /* [수정] 타이틀 글자가 짤리지 않도록 하단 여백 추가 */
+        h3 {
+            margin-bottom: 1.5rem !important;
+            line-height: 1.6 !important;
+            padding: 10px 0;
+        }
 
         .video-container {
             position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
@@ -19,21 +30,23 @@ st.markdown("""
         }
         .video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
-        /* Streamlit 내부 자동 간격 무력화 */
+        /* 영상과 폼 사이의 간격만 0으로 유지 */
         [data-testid="stVerticalBlock"] > div:has(div.video-container) + div { display: none !important; }
-        .stVerticalBlock { gap: 0rem !important; }
+        
+        /* [수정] 전체 gap을 0으로 만드는 대신, 특정 요소들만 밀착 */
+        .stVerticalBlock { gap: 1rem !important; } /* 기본 간격은 조금 둡니다 */
 
         .consultation-form-container { 
             background-color: #f0f2f6; padding: 30px; border-radius: 0 0 15px 15px;
-            margin-top: 0px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            margin-top: -1rem !important; /* 영상과 강제로 밀착 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
 
-        /* [추가] 상담 안내 문구 스타일 */
         .guide-text {
             font-size: 16px;
             color: #666666;
             margin-bottom: 10px;
-            margin-top: -5px;
+            margin-top: 5px;
         }
 
         div.stButton > button {
@@ -42,7 +55,11 @@ st.markdown("""
             box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s ease, transform 0.2s ease;
         }
         div.stButton > button:hover { background-color: #E03E3E; transform: scale(1.05); }
-        .countdown-text { font-size: 80px; font-weight: bold; color: #FF4B4B; text-align: center; margin-top: 40px; }
+        
+        .countdown-text { 
+            font-size: 80px; font-weight: bold; color: #FF4B4B; 
+            text-align: center; margin-top: 20px; 
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -62,7 +79,7 @@ with col2:
             st.rerun()
 
     elif st.session_state.app_state == "countdown":
-        st.write("<h3 style='text-align: center;'>학부모 교육을 위한 영상을 시청 후 상담을 신청해주세요</h3>", unsafe_allow_html=True)
+        st.write("<h3 style='text-align: center;'>학부모 교육을 위한 영상을 시청 후<br>상담을 신청해주세요</h3>", unsafe_allow_html=True)
         placeholder = st.empty()
         for i in range(5, 0, -1):
             placeholder.markdown(f"<div class='countdown-text'>{i}</div>", unsafe_allow_html=True)
@@ -83,8 +100,6 @@ with col2:
         # 상담 양식 영역
         st.markdown('<div class="consultation-form-container">', unsafe_allow_html=True)
         st.write("### 📝 상담 요청")
-        
-        # [수정 반영] 제목 바로 밑에 안내 문구 추가
         st.markdown('<div class="guide-text">상담 내용을 적어주세요</div>', unsafe_allow_html=True)
         
         user_input = st.text_area("", placeholder="", height=150, key="consult_input", label_visibility="collapsed")
