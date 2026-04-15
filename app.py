@@ -81,49 +81,7 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
                 line-height: 1.4;
             }
 
-            /* 비디오 팝업 오버레이 스타일 */
-            .video-modal-overlay {
-                position: fixed; /* 고정 위치 */
-                top: 0;
-                left: 0;
-                width: 100vw; /* 전체 너비 */
-                height: 100vh; /* 전체 높이 */
-                background-color: rgba(0, 0, 0, 0.9); /* 어두운 배경 */
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 999; /* 카운트다운 아래, 메인 콘텐츠 위 */
-            }
-            .video-modal-content {
-                background-color: #282c34; /* 비디오 컨테이너 배경색 */
-                padding: 20px;
-                border-radius: 15px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 15px; /* 비디오와 버튼 사이 간격 */
-            }
-            /* 비디오 팝업 내 닫기 버튼 스타일 */
-            .video-modal-content div.stButton > button:first-child {
-                background-color: #f44336; /* 빨간색 */
-                color: white;
-                padding: 10px 20px;
-                border-radius: 8px;
-                font-size: 16px;
-                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-                transition: background-color 0.3s ease;
-                margin-top: 10px; /* 비디오와의 간격 */
-            }
-            .video-modal-content div.stButton > button:first-child:hover {
-                background-color: #d32f2f;
-            }
-            .stVideo {
-                border-radius: 10px; /* 비디오 모서리 둥글게 */
-                overflow: hidden; /* 모서리 둥글게 적용 */
-            }
-
-            /* 상담 양식 컨테이너 스타일 (팝업 닫힌 후 표시) */
+            /* 상담 양식 컨테이너 스타일 (비디오 종료 후 표시) */
             .consultation-form-container {
                 background-color: #f0f2f6; /* 밝은 회색 배경 */
                 padding: 30px;
@@ -140,10 +98,8 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
     # State initialization
     if "show_start_button" not in st.session_state:
         st.session_state.show_start_button = True
-    if "show_video_popup" not in st.session_state:
-        st.session_state.show_video_popup = False
-    if "show_consultation_form" not in st.session_state:
-        st.session_state.show_consultation_form = False
+    if "show_video_and_form" not in st.session_state:
+        st.session_state.show_video_and_form = False
 
     # 1. Show initial "상담하기" button
     if st.session_state.show_start_button:
@@ -151,12 +107,12 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
         st.write("상담하기 버튼을 눌러 영상을 시청하고 상담을 요청하세요.")
         if st.button("상담하기", key="start_consultation"):
             st.session_state.show_start_button = False
-            st.session_state.show_video_popup = True
-            st.rerun() # Rerun to immediately show the video popup
+            st.session_state.show_video_and_form = True
+            st.rerun() # Rerun to immediately show the video and form
 
-    # 2. Show Video Pop-up with Countdown
-    if st.session_state.show_video_popup:
-        # Countdown layer (on top of video pop-up)
+    # 2. Show Video and Consultation Form
+    if st.session_state.show_video_and_form:
+        # Countdown layer
         countdown_placeholder = st.empty()
         for i in range(5, 0, -1):
             countdown_html = f"""
@@ -171,34 +127,17 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
             time.sleep(1)
         countdown_placeholder.empty() # Remove countdown layer
 
-        # Video pop-up itself
-        st.markdown("""
-            <div class="video-modal-overlay">
-                <div class="video-modal-content">
-        """, unsafe_allow_html=True)
-
-        # Added autoplay=True and ensured muted=True for better playback compatibility
+        # Display video directly
         st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
 
-        if st.button("닫기", key="close_video_popup"):
-            st.session_state.show_video_popup = False
-            st.session_state.show_consultation_form = True
-            st.rerun() # Rerun to show consultation form
-
-        st.markdown("""
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    # 3. Show Consultation Form
-    if st.session_state.show_consultation_form:
+        # Consultation Form
         st.markdown('<div class="consultation-form-container">', unsafe_allow_html=True)
         st.write("### 상담 요청")
         user_input = st.text_area("문의 내용을 입력하세요.", key="consultation_input_form", height=150)
         if st.button("상담 내용 제출", key="submit_consultation_form"):
             if user_input:
                 st.success("상담 내용이 접수되었습니다. 곧 연락드리겠습니다!")
-                st.session_state.show_consultation_form = False # Hide form
+                st.session_state.show_video_and_form = False # Hide video and form
                 st.session_state.show_start_button = True # Go back to the initial state
                 st.rerun()
             else:
