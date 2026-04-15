@@ -35,7 +35,7 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
         countdown_placeholder.empty() # 카운트다운 텍스트 제거
 
         # 카운트다운 후 비디오 재생 (16:9 비율, 폭 700px)
-        st.video(video_url, format="video/mp4", start_time=0, width=700, height=394) # 16:9 비율 유지 (700 * 9 / 16 ≈ 394)
+        st.video(video_url, format="video/mp4", start_time=0) # 16:9 비율 유지 (700 * 9 / 16 ≈ 394)
     else:
         st.write("상담하기 버튼을 눌러 영상을 시작하세요.")
 
