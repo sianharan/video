@@ -3,7 +3,8 @@ import time
 
 st.set_page_config(layout="wide")
 
-video_url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" # Changed to a more robust 10-second video URL
+# Reverting to the previous video URL as requested by the user
+video_url = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/720/Big_Buck_Bunny_720_10s_5MB.mp4"
 
 # 콘텐츠를 중앙에 배치하기 위해 컬럼 사용 (대략 절반 너비)
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -112,7 +113,10 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
 
     # 2. Show Video and Consultation Form
     if st.session_state.show_video_and_form:
-        # Countdown layer
+        # Display video first, so the countdown can overlay it
+        st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
+
+        # Countdown layer - this will appear on top of the video due to CSS
         countdown_placeholder = st.empty()
         for i in range(5, 0, -1):
             countdown_html = f"""
@@ -126,9 +130,6 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
             countdown_placeholder.markdown(countdown_html, unsafe_allow_html=True)
             time.sleep(1)
         countdown_placeholder.empty() # Remove countdown layer
-
-        # Display video directly
-        st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
 
         # Consultation Form
         st.markdown('<div class="consultation-form-container">', unsafe_allow_html=True)
