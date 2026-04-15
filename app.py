@@ -5,7 +5,18 @@ st.set_page_config(layout="wide")
 
 video_url = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/720/Big_Buck_Bunny_720_10s_5MB.mp4" # 10초 길이의 비디오
 
-# 콘텐츠를 중앙에 배치하기 위해 컬럼 사용 (대략 절반 너비)
+# --- State Management --- (상태 관리)
+# Define states (앱의 현재 단계를 정의합니다)
+STATE_START_BUTTON = "start_button"
+STATE_COUNTDOWN = "countdown"
+STATE_VIDEO = "video"
+STATE_CONSULTATION_FORM = "consultation_form"
+
+# Initialize state if not present (앱 상태가 없으면 초기 상태로 설정합니다)
+if "app_state" not in st.session_state:
+    st.session_state.app_state = STATE_START_BUTTON
+
+# --- UI Layout --- (UI 레이아웃)
 col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
@@ -43,42 +54,20 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
                 background-color: #45a049;
             }
 
-            /* 카운트다운 오버레이 스타일 */
-            .countdown-overlay {
-                position: fixed; /* 고정 위치 */
-                top: 0;
-                left: 0;
-                width: 100vw; /* 전체 너비 */
-                height: 100vh; /* 전체 높이 */
-                background-color: rgba(0, 0, 0, 0.8); /* 어두운 배경 */
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000; /* 가장 위에 표시 */
-            }
-            .countdown-box {
-                width: 300px; /* 조정된 너비 */
-                height: 200px; /* 조정된 높이 */
-                background-color: rgba(40, 40, 40, 0.9); /* 어두운 회색 배경 */
-                border-radius: 15px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-                padding: 20px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-                color: white;
-                font-family: 'Roboto', sans-serif;
-            }
-            .countdown-number {
+            /* 카운트다운 텍스트 스타일 (오버레이가 아닌 일반 텍스트) */
+            .countdown-text {
                 font-size: 72px; /* 큰 숫자 */
                 font-weight: bold;
-                margin-bottom: 15px;
+                color: #FF4B4B; /* 빨간색으로 강조 */
+                text-align: center;
+                margin-top: 50px;
             }
             .countdown-message {
-                font-size: 18px; /* 메시지 폰트 크기 */
+                font-size: 24px; /* 메시지 폰트 크기 */
                 line-height: 1.4;
+                text-align: center;
+                margin-bottom: 30px;
+                color: #555555;
             }
 
             /* 상담 양식 컨테이너 스타일 (비디오 종료 후 표시) */
@@ -95,61 +84,46 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     """, unsafe_allow_html=True)
 
-    # State initialization
-    if "show_start_button" not in st.session_state:
-        st.session_state.show_start_button = True
-    if "show_video_and_countdown" not in st.session_state:
-        st.session_state.show_video_and_countdown = False
-    if "show_consultation_form" not in st.session_state:
-        st.session_state.show_consultation_form = False
+    # --- State Logic --- (상태별 로직 처리)
 
-    # 1. Show initial "상담하기" button
-    if st.session_state.show_start_button:
+    # 1. 초기 '상담하기' 버튼 표시
+    if st.session_state.app_state == STATE_START_BUTTON:
         st.markdown("<br>" * 5, unsafe_allow_html=True)
         st.write("상담하기 버튼을 눌러 영상을 시청하고 상담을 요청하세요.")
         if st.button("상담하기", key="start_consultation"):
-            st.session_state.show_start_button = False
-            st.session_state.show_video_and_countdown = True
-            st.rerun()
+            st.session_state.app_state = STATE_COUNTDOWN # 상태를 카운트다운으로 변경
+            st.rerun() # 앱을 다시 실행하여 새 상태 반영
 
-    # 2. Show Video and Countdown
-    elif st.session_state.show_video_and_countdown:
-        # Display video first
-        st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
-
-        # Countdown layer - this will appear on top of the video due to CSS
+    # 2. 카운트다운 표시
+    elif st.session_state.app_state == STATE_COUNTDOWN:
+        st.write("<h3 style='text-align: center;'>학부모 교육을 위한 영상을 보신 뒤 상담을 신청해주세요</h3>", unsafe_allow_html=True)
         countdown_placeholder = st.empty()
         for i in range(5, 0, -1):
-            countdown_html = f"""
-            <div class="countdown-overlay">
-                <div class="countdown-box">
-                    <div class="countdown-number">{i}</div>
-                    <div class="countdown-message">학부모 교육용 영상을 보신 뒤 상담을 신청하세요</div>
-                </div>
-            </div>
-            """
-            countdown_placeholder.markdown(countdown_html, unsafe_allow_html=True)
-            # Removed time.sleep(1) to prevent blocking the Streamlit app and allow video to play.
-            # This will make the countdown visual appear very quickly.
+            countdown_placeholder.markdown(f"<div class='countdown-text'>{i}</div>", unsafe_allow_html=True)
+            time.sleep(1) # 1초씩 UI를 블록하여 카운트다운을 시각적으로 보여줍니다.
+        countdown_placeholder.empty() # 카운트다운 완료 후 메시지 제거
+        st.session_state.app_state = STATE_VIDEO # 상태를 비디오 재생으로 변경
+        st.rerun() # 앱을 다시 실행하여 새 상태 반영
 
-        countdown_placeholder.empty() # Remove countdown layer after 'countdown'
+    # 3. 비디오 재생
+    elif st.session_state.app_state == STATE_VIDEO:
+        st.write("<h3 style='text-align: center;'>교육 영상 시청 중</h3>", unsafe_allow_html=True)
+        st.video(video_url, format="video/mp4", start_time=0, loop=False, muted=True, autoplay=True, width=700)
 
-        # After countdown (and video playing, as time.sleep was removed),
-        # transition to consultation form. This effectively happens immediately after the countdown loop finishes.
-        st.session_state.show_video_and_countdown = False
-        st.session_state.show_consultation_form = True
-        st.rerun()
+        # 비디오 재생 시간을 시뮬레이션 (10초 동안 UI 블록)
+        time.sleep(10) # 비디오가 재생되는 동안 UI를 10초간 블록합니다.
+        st.session_state.app_state = STATE_CONSULTATION_FORM # 상태를 상담 양식으로 변경
+        st.rerun() # 앱을 다시 실행하여 새 상태 반영
 
-    # 3. Show Consultation Form
-    elif st.session_state.show_consultation_form:
+    # 4. 상담 양식 표시
+    elif st.session_state.app_state == STATE_CONSULTATION_FORM:
         st.markdown('<div class="consultation-form-container">', unsafe_allow_html=True)
         st.write("### 상담 요청")
         user_input = st.text_area("문의 내용을 입력하세요.", key="consultation_input_form", height=150)
         if st.button("상담 내용 제출", key="submit_consultation_form"):
             if user_input:
                 st.success("상담 내용이 접수되었습니다. 곧 연락드리겠습니다!")
-                st.session_state.show_consultation_form = False # Hide form
-                st.session_state.show_start_button = True # Go back to the initial state
+                st.session_state.app_state = STATE_START_BUTTON # 초기 상태로 돌아감
                 st.rerun()
             else:
                 st.warning("문의 내용을 입력해주세요.")
