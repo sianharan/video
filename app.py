@@ -38,8 +38,8 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
             time.sleep(1)
         countdown_placeholder.empty() # 카운트다운 텍스트 제거
 
-        # 카운트다운 후 비디오 재생 (16:9 비율, 폭 700px) 및 상담 영역 노출
-        st.video(video_url, format="video/mp4", start_time=0, width=700, height=394) # 16:9 비율 유지 (700 * 9 / 16 ≈ 394)
+        # 카운트다운 후 비디오 재생 및 상담 영역 노출
+        st.video(video_url)
 
         st.write("### 상담 요청")
         user_input = st.text_area("문의 내용을 입력하세요.", key="consultation_input")
