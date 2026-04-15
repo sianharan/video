@@ -128,7 +128,8 @@ with col2: # 모든 콘텐츠를 중앙 컬럼에 배치
             </div>
             """
             countdown_placeholder.markdown(countdown_html, unsafe_allow_html=True)
-            time.sleep(1)
+            # Removed time.sleep(1) to prevent blocking the Streamlit app and allow video to play.
+            # This will make the countdown visual appear very quickly.
         countdown_placeholder.empty() # Remove countdown layer
 
         # Consultation Form
