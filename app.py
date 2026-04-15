@@ -1,3 +1,11 @@
+수연님, 디자인 디테일을 잡아가는 과정이 정말 즐겁네요!
+
+강렬한 빨간색 카운트다운은 다소 시선을 분산시킬 수 있죠. 이번에는 차분하고 모던한 그레이 톤을 베이스로 하고, 폰트 굵기와 간격을 조절하여 마치 프리미엄 미니멀리즘 앱 같은 세련된 느낌으로 UI를 변경해 보았습니다.
+
+✅ 세련된 미니멀 UI로 app.py 업데이트하기
+GitHub의 app.py 내용을 아래 코드로 전체 교체해 주세요.
+
+Python
 import streamlit as st
 import time
 
@@ -7,58 +15,82 @@ st.set_page_config(layout="wide")
 # 2. 사용할 비디오 URL
 video_url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
 
-# 3. 강력한 CSS: 상단 간격 확보 및 짤림 방지
+# 3. 사용자 지정 CSS: 미니멀 & 세련된 디자인
 st.markdown("""
     <style>
-        /* [수정] 전체 컨테이너 상단 여백을 넉넉하게 (5rem) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        html, body, [class*="css"] {
+            font-family: 'Inter', sans-serif;
+        }
+
         .block-container { 
-            padding-top: 5rem !important; 
+            padding-top: 6rem !important; 
             padding-bottom: 2rem; 
         }
 
-        /* [수정] 타이틀 글자가 짤리지 않도록 하단 여백 추가 */
+        /* [수정] 타이틀 스타일: 더 얇고 세련된 폰트감 */
         h3 {
-            margin-bottom: 1.5rem !important;
-            line-height: 1.6 !important;
-            padding: 10px 0;
+            font-weight: 400 !important;
+            color: #333333;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem !important;
+            line-height: 1.5 !important;
         }
 
+        /* [핵심 수정] 카운트다운: 빨간색 제거, 크기 축소, 세련된 그레이 톤 */
+        .countdown-text { 
+            font-size: 60px; 
+            font-weight: 300; /* 얇은 폰트로 세련미 추가 */
+            color: #444444; 
+            text-align: center; 
+            margin-top: 30px;
+            letter-spacing: -0.05em;
+        }
+
+        /* 영상 컨테이너 */
         .video-container {
             position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
-            max-width: 100%; background: black; border-radius: 12px 12px 0 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 0px !important;
+            max-width: 100%; background: #000; border-radius: 16px 16px 0 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 0px !important;
         }
         .video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
-        /* 영상과 폼 사이의 간격만 0으로 유지 */
+        /* 영상과 폼 사이 밀착 */
         [data-testid="stVerticalBlock"] > div:has(div.video-container) + div { display: none !important; }
-        
-        /* [수정] 전체 gap을 0으로 만드는 대신, 특정 요소들만 밀착 */
-        .stVerticalBlock { gap: 1rem !important; } /* 기본 간격은 조금 둡니다 */
+        .stVerticalBlock { gap: 1.2rem !important; }
 
         .consultation-form-container { 
-            background-color: #f0f2f6; padding: 30px; border-radius: 0 0 15px 15px;
-            margin-top: -1rem !important; /* 영상과 강제로 밀착 */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            background-color: #f8f9fa; /* 더 밝고 깨끗한 그레이 */
+            padding: 40px; 
+            border-radius: 0 0 16px 16px;
+            margin-top: -1.2rem !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
         }
 
         .guide-text {
-            font-size: 16px;
-            color: #666666;
-            margin-bottom: 10px;
+            font-size: 15px;
+            color: #888888;
+            margin-bottom: 12px;
             margin-top: 5px;
         }
 
+        /* [수정] 버튼 스타일: 더 깊이감 있는 딥 다크 그레이/블랙 톤으로 변경 가능하지만, 
+           수연님의 '상담' 의지를 고려해 차분한 딥 레드 혹은 모던 블랙 추천 */
         div.stButton > button {
-            background-color: #FF4B4B; color: white; padding: 18px 40px;
-            font-size: 24px; border-radius: 50px; border: none; font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s ease, transform 0.2s ease;
+            background-color: #1a1a1a; /* 세련된 블랙 */
+            color: white;
+            padding: 16px 45px;
+            font-size: 20px;
+            border-radius: 8px; /* 너무 둥근 것보다 각진 느낌이 더 신뢰감을 줌 */
+            border: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-        div.stButton > button:hover { background-color: #E03E3E; transform: scale(1.05); }
-        
-        .countdown-text { 
-            font-size: 80px; font-weight: bold; color: #FF4B4B; 
-            text-align: center; margin-top: 20px; 
+        div.stButton > button:hover {
+            background-color: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -82,6 +114,7 @@ with col2:
         st.write("<h3 style='text-align: center;'>학부모 교육을 위한 영상을 시청 후<br>상담을 신청해주세요</h3>", unsafe_allow_html=True)
         placeholder = st.empty()
         for i in range(5, 0, -1):
+            # 폰트 두께를 얇게(Light) 적용하여 고급스러운 바이브 연출
             placeholder.markdown(f"<div class='countdown-text'>{i}</div>", unsafe_allow_html=True)
             time.sleep(1)
         placeholder.empty()
@@ -97,7 +130,6 @@ with col2:
             </div>
         """, unsafe_allow_html=True)
 
-        # 상담 양식 영역
         st.markdown('<div class="consultation-form-container">', unsafe_allow_html=True)
         st.write("### 📝 상담 요청")
         st.markdown('<div class="guide-text">상담 내용을 적어주세요</div>', unsafe_allow_html=True)
