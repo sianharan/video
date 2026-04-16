@@ -96,7 +96,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
     if st.session_state.app_state == "start_button":
-        st.write("### 전문가 상담")
+        st.write("### 전문가 상담 (Type A)")
         st.write("아래 버튼을 눌러 교육 영상을 시청하고 상담을 신청하세요.")
         if st.button("상담 신청", key="start_btn"):
             st.session_state.app_state = "countdown"
